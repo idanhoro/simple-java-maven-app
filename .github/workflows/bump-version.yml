@@ -7,13 +7,11 @@ on:
 
 jobs:
   build:
+    name: Create Release
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-        env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Increase the patch part of the jar version
         run: |
           echo "Bumping the patch version to $(( "${VERSION}" + 1 ))"
@@ -22,8 +20,14 @@ jobs:
       - name: Build the jar
         run: mvn clean install
 
-      - name: Create a release
+      - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: "This is a release of the simple-java-maven-app project."
+          draft: false
+          prerelease: false
