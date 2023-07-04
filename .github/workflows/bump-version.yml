@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Increase the patch part of the jar version
         run: |
@@ -25,4 +27,3 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           body: "This is a release of the simple-java-maven-app project."
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
