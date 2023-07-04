@@ -19,3 +19,10 @@ jobs:
 
       - name: Build the jar
         run: mvn clean install
+
+      - name: Create a release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          target_commitish: ${{ github.ref }}
+          description: "This is a release of the simple-java-maven-app project."
