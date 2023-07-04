@@ -25,4 +25,3 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           body: "This is a release of the simple-java-maven-app project."
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
