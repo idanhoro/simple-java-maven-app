@@ -1,35 +1,21 @@
-name: Bump Version
+name: CI/CD
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  bump-version:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  
-          token: ${{ secrets.MY_GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v2
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-
-      - name: Bump patch version and commit
+      - name: Increase the patch part of the jar version
         run: |
-          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
-          PATCH_VERSION=$((VERSION_PARTS[2] + 1))
-          NEW_VERSION="${VERSION_PARTS[0]}.${VERSION_PARTS[1]}.$PATCH_VERSION"
-          mvn versions:set -DnewVersion=$NEW_VERSION
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "Bump patch version" -a
-          git push
+          echo "Bumping the patch version to $(( "${VERSION}" + 1 ))"
+          sed -i -e "s/VERSION=.*/VERSION=${VERSION}.$(( "${VERSION}" + 1 ))/g" pom.xml
+
+      - name: Build the jar
+        run: mvn clean install
