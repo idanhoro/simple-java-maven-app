@@ -77,7 +77,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
 
 
-    - name: Create PR.
+    - name: Create PR
       if: success()
       uses: repo-sync/pull-request@v2
       with:
