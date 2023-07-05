@@ -2,13 +2,13 @@ name: Deploy to Production
 
 on:
   pull_request:
-    types: [closed]
-    branches: [master]
-
+    types:
+      - closed
+    branches:
+      - master
 jobs:
   deploy:
     name: Deploy to Production
-    needs: ci.build-and-test
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
