@@ -25,4 +25,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/weather-app:latest
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:latest
