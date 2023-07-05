@@ -42,7 +42,12 @@ jobs:
         run: echo "TAG_VERSION=${{ steps.bump_version.outputs.new_tag }}" >> $GITHUB_ENV
 
       - name: Update version in pom.xml
-        run: mvn versions:set -DnewVersion=${{ steps.bump_version.outputs.new_tag }}
+        run: |
+          mvn versions:set -DnewVersion=${{ steps.bump_version.outputs.new_tag }}
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -a -m "Update version in pom.xml" --author='github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
+          git push
 
       - name: Validate and Test with Maven
         run: mvn -B package --file pom.xml
