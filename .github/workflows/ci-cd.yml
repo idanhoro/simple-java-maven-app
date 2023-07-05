@@ -14,14 +14,14 @@ jobs:
     - name: Bump version and push tag
       id: tag_version
       uses: anothrNick/github-tag-action@1.64.0
+      env:
+        MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INITIAL_VERSION: 1.0.0
       with:
         default_bump: patch
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
         release_branches: 'master'
-      env:
-        MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        INITIAL_VERSION: 1.0.0
 
   build-and-push:
     runs-on: ubuntu-latest
