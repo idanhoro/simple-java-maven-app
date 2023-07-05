@@ -63,7 +63,7 @@ jobs:
         sleep 5  
         docker ps 
         docker logs my-app || true 
-        docker inspect -f '{{.State.ExitCode}}' my-app || true  
+        # docker inspect -f '{{.State.ExitCode}}' my-app || true  
         # curl -f http://localhost:8080 
         docker stop my-app || true
 

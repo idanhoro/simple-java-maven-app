@@ -11,4 +11,4 @@ WORKDIR /app
 
 COPY --from=build /app/target/my-app-*.jar /app/my-app.jar
 
-CMD ["sh", "-c", "java -jar /app/my-app.jar; sleep 100"]
+CMD ["sh", "-c", "java -jar /app/my-app.jar"]
