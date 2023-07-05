@@ -4,7 +4,7 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn package -DskipTests
+RUN mvn package
 
 FROM openjdk:11-jdk-slim AS run
 WORKDIR /app
