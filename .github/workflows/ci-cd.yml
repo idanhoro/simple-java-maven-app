@@ -47,21 +47,24 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
+        
     - name: Build Docker image
-      uses: docker/build-push-action@v3
+      id: docker_build
+      uses: docker/build-push-action@v2
       with:
         context: .
         push: false
+        load: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
 
     - name: Test Docker image
       run: |
-        docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }} local
+        docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
         sleep 10  # Give the app some time to start
         docker logs my-app
         curl -f http://localhost:8080  # Replace with your actual health check endpoint
         docker stop my-app
+
 
 
     - name: Push Docker image
