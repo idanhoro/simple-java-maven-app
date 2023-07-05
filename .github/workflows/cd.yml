@@ -6,6 +6,7 @@ on:
       - closed
     branches:
       - master
+
 jobs:
   deploy:
     name: Deploy to Production
@@ -19,13 +20,13 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-          
+
       - name: Deploy to Production
         run: |
           echo "Deploying to production."
           ssh -o StrictHostKeyChecking=no ubuntu@3.253.85.71 << EOF
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.ci.build-and-test.outputs.tag_version }}
-            # docker stop my-app || true
-            # docker rm my-app || true
-            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.ci.build-and-test.outputs.tag_version }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.build-and-test.outputs.tag_version }}
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.build-and-test.outputs.tag_version }}
           EOF
