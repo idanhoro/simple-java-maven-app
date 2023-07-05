@@ -1,4 +1,4 @@
-name: Build and push Docker image
+name: Build, Test, Push Docker image, and Deploy
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     types: [closed]
     branches: [ master ]
 
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
     - name: Check out the repo
       uses: actions/checkout@v3
@@ -67,11 +67,7 @@ jobs:
         sleep 5  
         docker ps 
         docker logs my-app || true 
-        # docker inspect -f '{{.State.ExitCode}}' my-app || true  
-        # curl -f http://localhost:8080 
         docker stop my-app || true
-
-
 
     - name: Push Docker image
       uses: docker/build-push-action@v3
@@ -79,7 +75,6 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
-
 
     - name: Create PR
       if: success()
@@ -95,9 +90,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: Install SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
@@ -108,8 +100,8 @@ jobs:
         echo "Deploying to production."
         ssh -o StrictHostKeyChecking=no ubuntu@3.253.85.71 << EOF
           # Commands to pull the latest Docker image and start it
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.build-and-push.outputs.new_tag }}
           docker stop my-app || true
           docker rm my-app || true
-          docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+          docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.build-and-push.outputs.new_tag }}
         EOF
