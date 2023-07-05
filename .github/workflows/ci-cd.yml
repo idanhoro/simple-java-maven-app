@@ -57,11 +57,12 @@ jobs:
 
     - name: Test Docker image
       run: |
-        docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+        docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }} local
         sleep 10  # Give the app some time to start
         docker logs my-app
         curl -f http://localhost:8080  # Replace with your actual health check endpoint
         docker stop my-app
+
 
     - name: Push Docker image
       uses: docker/build-push-action@v3
