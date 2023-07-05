@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/deployphp/deployer/master/src/schema.json": "file:///home/idanho/Desktop/simple-java-maven-app/.github/workflows/deploy.yml"
+    }
+}
