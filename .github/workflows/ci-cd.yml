@@ -84,5 +84,4 @@ jobs:
         destination_branch: "master"
         pr_title: "CI updates"
         pr_body: "Updates from CI"
-        pr_label: "automerge"
         github_token: ${{ secrets.GITHUB_TOKEN }}
