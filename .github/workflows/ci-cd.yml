@@ -2,7 +2,11 @@ name: Build and push Docker image
 
 on:
   push:
+    branches: [ development ]
+  pull_request:
+    types: [closed]
     branches: [ master ]
+
 
 jobs:
   build-and-push:
@@ -75,3 +79,37 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+
+
+    - name: Create PR
+      if: success()
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: "master"
+        pr_title: "CI updates"
+        pr_body: "Updates from CI"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+        
+    - name: Deploy to Production
+      run: |
+        echo "Deploying to production."
+        ssh -o StrictHostKeyChecking=no ubuntu@3.253.85.71 << EOF
+          # Commands to pull the latest Docker image and start it
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+          docker stop my-app || true
+          docker rm my-app || true
+          docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+        EOF
