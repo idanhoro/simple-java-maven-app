@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  tag-jar:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Check out the repo
@@ -22,10 +22,7 @@ jobs:
         user_name: 'github-actions[bot]'
         user_email: 'github-actions[bot]@users.noreply.github.com'
         release_branches: 'master'
-
-  build-and-push:
-    runs-on: ubuntu-latest
-    steps:
+      
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
@@ -41,4 +38,3 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
-
