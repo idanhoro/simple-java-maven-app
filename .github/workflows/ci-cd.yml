@@ -2,7 +2,7 @@ name: Build and push Docker image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ development ]
 
 jobs:
   build-and-push:
@@ -75,3 +75,14 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.tag_version.outputs.new_tag }}
+
+
+    - name: Create PR
+      if: success()
+      uses: repo-sync/pull-request@v2
+      with:
+        destination_branch: "master"
+        pr_title: "CI updates"
+        pr_body: "Updates from CI"
+        pr_label: "automerge"
+        github_token: ${{ secrets.GITHUB_TOKEN }}
