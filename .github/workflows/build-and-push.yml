@@ -114,7 +114,7 @@ jobs:
           echo "Deploying to production."
           ssh -o StrictHostKeyChecking=no ubuntu@3.253.85.71 << EOF
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ env.TAG_VERSION }}
-            docker stop my-app || true
-            docker rm my-app || true
+            # docker stop my-app || true
+            # docker rm my-app || true
             docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ env.TAG_VERSION }}
           EOF
