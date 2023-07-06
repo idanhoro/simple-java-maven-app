@@ -47,7 +47,8 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git commit -a -m "Update version in pom.xml" --author='github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
-          git push
+          git push origin development
+
 
       - name: Validate and Test with Maven
         run: mvn -B package --file pom.xml
