@@ -21,12 +21,18 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
+      - name: Extract version from pom.xml
+        id: extract-version
+        run: |
+          version=$(grep -oP '(?<=<version>).*?(?=</version>)' pom.xml | head -1)
+          echo "::set-output name=version::$version"
+
       - name: Deploy to Production
         run: |
           echo "Deploying to production."
           ssh -o StrictHostKeyChecking=no ubuntu@3.249.238.180 << EOF
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.build-and-test.outputs.tag_version }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.deploy.outputs.version }}
             docker stop my-app || true
             docker rm my-app || true
-            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.build-and-test.outputs.tag_version }}
+            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.deploy.outputs.version }}
           EOF
