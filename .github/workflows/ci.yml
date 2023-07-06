@@ -77,10 +77,10 @@ jobs:
           sleep 5  
           [ "$(docker logs my-app)" == "Hello World!" ] || exit 1
           # docker ps 
-          # docker logs my-app || true 
-          docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.bump_version.outputs.new_tag }}
-          docker rm my-app
+          # docker logs my-app || true
           docker stop my-app || true
+          docker rm my-app || true
+          docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.bump_version.outputs.new_tag }}
 
       - name: Push Docker image
         uses: docker/build-push-action@v3
