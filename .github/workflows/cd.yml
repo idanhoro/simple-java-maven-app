@@ -24,7 +24,7 @@ jobs:
       - name: Deploy to Production
         run: |
           echo "Deploying to production."
-          ssh -o StrictHostKeyChecking=no ubuntu@3.253.85.71 << EOF
+          ssh -o StrictHostKeyChecking=no ubuntu@3.249.238.180 << EOF
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.build-and-test.outputs.tag_version }}
             docker stop my-app || true
             docker rm my-app || true
