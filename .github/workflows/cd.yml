@@ -8,18 +8,14 @@ on:
       - master
 
 jobs:
-  deploy:
-    name: Deploy to Production
+  extract-version:
+    name: Extract version from pom.xml
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Extract version from pom.xml
         id: extract-version
@@ -27,12 +23,22 @@ jobs:
           version=$(grep -oP '(?<=<version>).*?(?=</version>)' pom.xml | head -1)
           echo "::set-output name=version::$version"
 
+  deploy:
+    needs: extract-version
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
       - name: Deploy to Production
         run: |
           echo "Deploying to production."
           ssh -o StrictHostKeyChecking=no ubuntu@3.249.238.180 << EOF
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.deploy.outputs.version }}
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.extract-version.outputs.version }}
             docker stop my-app || true
             docker rm my-app || true
-            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.deploy.outputs.version }}
+            docker run -d --name my-app -p 8080:8080 ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ needs.extract-version.outputs.version }}
           EOF
