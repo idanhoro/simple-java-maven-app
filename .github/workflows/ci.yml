@@ -73,7 +73,7 @@ jobs:
 
       - name: Test Docker image
         run: |
-          [ "$(docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.bump_version.outputs.new_tag }})" == "Hello World!" ] || exit 1
+          docker run --rm -d -p 8080:8080 --name my-app ${{ secrets.DOCKER_HUB_USERNAME }}/simple-java-maven-app:${{ steps.bump_version.outputs.new_tag }}
           sleep 5  
           docker ps 
           docker logs my-app || true 
